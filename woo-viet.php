@@ -121,7 +121,7 @@ class WooViet {
 
 
 	public function add_gateway_class( $methods ) {
-		$methods[] = 'WooViet_1Pay';
+		$methods[] = 'WooViet_1Pay_Bank';
 		return $methods;
 
 	}
@@ -134,7 +134,7 @@ class WooViet {
 		// @todo: ver 1.3 check this
 		add_filter( 'woocommerce_payment_gateways', array( $this, 'add_gateway_class' ) );
 
-		include( 'inc/class-wooviet-1pay.php');
+		include( 'inc/class-wooviet-1pay-bank.php');
 
 
 		if ( is_admin() ) {

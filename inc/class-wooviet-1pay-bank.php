@@ -13,18 +13,18 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 
 
-class WooViet_1Pay extends WC_Payment_Gateway {
+class WooViet_1Pay_Bank extends WC_Payment_Gateway {
 	/**
 	 * Constructor for the gateway.
 	 */
 	public function __construct() {
-		$this->id                 = 'wooviet_1pay';
+		$this->id                 = 'wooviet_1pay_bank';
 		$this->has_fields         = false;
 		$this->order_button_text  = __( 'Proceed to 1Pay', 'woo-viet' );
-		$this->method_title       = __( '1Pay supported by Woo Viet', 'woo-viet' );
+		$this->method_title       = __( '1Pay Bank (by Woo Viet)', 'woo-viet' );
 
 		// @todo - check the method description
-		$this->method_description =  __( '1Pay supported many ways for the payment in Vietnam - need to check!.', 'woo-viet' );
+		$this->method_description =  __( '1Pay Bank supports all banks of Vietnam.', 'woo-viet' );
 		$this->supports           = array(
 			'products',
 			'refunds'
@@ -53,25 +53,26 @@ class WooViet_1Pay extends WC_Payment_Gateway {
 	/**
 	 * Process the payment.
 	 */
-	function process_payment( $order_id ) {
-		global $woocommerce;
-		$order = new WC_Order( $order_id );
+	public function process_payment( $order_id ) {
 
-		// Mark as on-hold (we're awaiting the cheque)
-		$order->update_status('on-hold', __( 'Awaiting your payment', 'woo-viet' ));
+		$order          = wc_get_order( $order_id );
 
-		// Reduce stock levels
-		$order->reduce_order_stock();
-
-		// Remove cart
-		$woocommerce->cart->empty_cart();
-
-		// Return thankyou redirect
 		return array(
-			'result' => 'success',
-			'redirect' => $this->get_return_url( $order )
+			'result'   => 'success',
+			'redirect' => $this->get_request_url( $order )
 		);
 	}
+
+	/**
+	 * Get the 1Pay request URL for an order.
+	 * @param  WC_Order $order
+	 * @return string
+	 */
+	public function get_request_url ( $order ) {
+
+	}
+
+
 }
 
 
