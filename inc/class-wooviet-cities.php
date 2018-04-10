@@ -25,9 +25,6 @@ class WooViet_Cities {
 
 		add_filter( 'wc_city_select_cities', array( $this, 'add_cities' ) );
 
-
-		add_filter( 'woocommerce_default_address_fields', array( $this, 'custom_address_field') );
-
 	}
 
 	/**
@@ -50,14 +47,4 @@ class WooViet_Cities {
 
 	}
 
-	/*
-	* Set priority for state and city
-	*/
-	function custom_address_field($fields) {
-		$fields['state']['priority'] = 50;
-		$fields['city']['priority'] = 60;
-		$fields['address_1']['priority'] = 70;
-		$fields['address_2']['priority'] = 80;
-		return $fields;
-	}
 }
