@@ -17,6 +17,8 @@ class WooViet_Shipping_Method extends WC_Shipping_Method {
             'instance-settings',
         );
         $this->title = 'WooViet Shipping City';
+
+        $this->option_key         = $this->id . 'city_fields';
         
         $this->init();
 
@@ -34,14 +36,18 @@ class WooViet_Shipping_Method extends WC_Shipping_Method {
         $this->title = $this->get_option( 'title' );
         $this->city = $this->get_option( 'city' );
         $this->city_cost = $this->get_option( 'city_cost' );
-        //$this->state_cost = $this->get_option( 'state_cost' );
+        $this->state_cost = $this->get_option( 'state_cost' );
+        $this->city_name = $this->get_option( 'city_name' );
+
         /*$this->city_select = array(
             'city_title',
             'city_cost',
             'city_zone'
         );*/
+
         // Actions
         add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );
+        add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_custom_settings' ) );
     }
 
 
@@ -110,18 +116,18 @@ class WooViet_Shipping_Method extends WC_Shipping_Method {
                 'default'       => '',
                 'desc_tip'      => true,
             ),
-            /*'state_cost' => array(
+            'state_cost' => array(
                 'title'         => __( 'State Cost', 'woo-viet' ),
                 'type'          => 'price',
                 'placeholder'   => '0',
                 'description'   => __( 'Optional cost for shipping to state if customer choose any city.', 'woo-viet' ),
                 'default'       => '',
                 'desc_tip'      => true,
-            ),*/
-            /*'city_select1'  => array(
+            ),
+            'city_select'  => array(
                 'type'            => 'city_select',
                 'class'           => 'city_select',
-            ),*/
+            ),
         );
                 
     }
@@ -131,9 +137,8 @@ class WooViet_Shipping_Method extends WC_Shipping_Method {
         if( isset( $_POST['customer_city'] ) ) {
             $customer_city= $_POST['customer_city'];
         }
-        session_start();
-        $_SESSION['city'] = $customer_city;
-        print_r($_SESSION['city']);
+
+        print_r($customer_city);
         
         //Don't forget to always exit in the ajax function.
         exit();
@@ -150,8 +155,11 @@ class WooViet_Shipping_Method extends WC_Shipping_Method {
      */
 
     public function calculate_shipping( $package = array() ) {
-        @session_start();
-        if( $this->city == $_SESSION['city'] ) {
+
+        global $woocommerce;
+        $package = $woocommerce->cart->get_shipping_packages();
+
+        if( $this->city == $package[0]['destination']['city'] ) {
             $this->cost = $this->city_cost;
         }
             $this->add_rate( array(
@@ -161,16 +169,11 @@ class WooViet_Shipping_Method extends WC_Shipping_Method {
             ) );   
     }
 
-    /*public function action_woocommerce_checkout_update_order_review($array, $int) {
-        WC()->cart->calculate_shipping();
-        return;
-    }*/
-    
 
     /**
      * generate_services_html function.
      */
-    /*public function generate_city_select_html() {
+    public function generate_city_select_html() {
         ob_start();
         ?>
         <tr valign="top" id="service_options" class="rates_tab_field" >
@@ -187,19 +190,19 @@ class WooViet_Shipping_Method extends WC_Shipping_Method {
                         
                         <tr>
                             <td>
-                                <input class="input-text regular-input " type="text" name="woocommerce_wooviet_shipping_city_select1_city_title" id="woocommerce_wooviet_shipping_city_title" placeholder="" value="<?php echo $this->get_option( 'city_title' ) ?>">
+                                <input class="input-text regular-input " type="text" name="city_title" id="woocommerce_wooviet_shipping_city_title" placeholder="" value="<?php echo $this->get_option( 'city_title' ) ?>">
                             </td>
 
                             <td>
-                                <select name="woocommerce_wooviet_shipping_city" id="" class="select wc-enhanced-select  enhanced">
+                                <select name="city_name" id="" class="select wc-enhanced-select  enhanced">
                                     <?php foreach ($this->zone_selected as $value) : ?>
-                                        <option value="<?php echo $value ?>" <?php ( $this->get_option( 'city' ) == $value ) ? 'selected' : '' ?>><?php echo $value; ?></option>
+                                        <option value="<?php echo $value ?>" <?php ( $this->get_option( 'city_name' ) == $value ) ? 'selected' : '' ?>><?php echo $value; ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </td>
                             
                             <td>
-                                <input class="input-text regular-input " type="text" name="woocommerce_wooviet_shipping_city_cost" id="woocommerce_wooviet_shipping_city_cost" placeholder="" value="<?php echo $this->get_option( 'city_cost' ) ?>">
+                                <input class="input-text regular-input " type="text" name="city_cost" id="woocommerce_wooviet_shipping_city_cost" placeholder="" value="<?php echo $this->get_option( 'city_cost' ) ?>">
                             </td>
                             
                         </tr>
@@ -211,8 +214,25 @@ class WooViet_Shipping_Method extends WC_Shipping_Method {
 
 
         <?php return ob_get_clean();
-    }*/
+    }
 
+    /*
+    * Save custom setting
+    */
+    public function process_custom_settings() {
+
+        $option = array();
+
+        if( isset($_POST['city_title']) ) {
+            $city_title = $_POST['city_title'];
+
+            $option['city_title'] = $_POST['city_title'];
+        }
+
+
+
+        update_option( $this->option_key, $options ); 
+    }
     
 
 }
