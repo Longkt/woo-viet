@@ -249,6 +249,9 @@ class WooViet {
 	}
 
 	public function wooviet_enqueue_scripts() {
+
+		wp_enqueue_style( 'wooviet-style', WOO_VIET_URL . 'assets/wooviet-style.css' );
+
 		wp_enqueue_script( 'wooviet-script', WOO_VIET_URL . 'assets/wooviet-script.js', array( 'jquery' ), '1.0.0', true );
 
 		wp_localize_script( 'wooviet-script', 'woovietAjax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );

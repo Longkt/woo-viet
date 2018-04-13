@@ -21,11 +21,12 @@ class WooViet_Shipping_Method extends WC_Shipping_Method {
         $this->option_key         = $this->id . 'city_fields';
         
         $this->init();
+        //add_filter( 'woocommerce_package_rates', array( $this, 'update_shipping_costs_based_on_cart_session_custom_data' ) );
 
 
 
     }
-
+    
     public function init() {
 
         // Load the settings.
@@ -138,7 +139,11 @@ class WooViet_Shipping_Method extends WC_Shipping_Method {
             $customer_city= $_POST['customer_city'];
         }
 
-        print_r($customer_city);
+        session_start();
+        $_SESSION['city'] = $customer_city;
+
+        print_r($_SESSION['city']);
+
         
         //Don't forget to always exit in the ajax function.
         exit();
@@ -162,6 +167,7 @@ class WooViet_Shipping_Method extends WC_Shipping_Method {
         if( $this->city == $package[0]['destination']['city'] ) {
             $this->cost = $this->city_cost;
         }
+        
             $this->add_rate( array(
               'id'   => $this->id,
               'label' => $this->title,
