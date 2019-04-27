@@ -220,6 +220,9 @@ class WooViet {
 			);
 		}
 
+		add_action( 'woocommerce_shipping_init', array( $this, 'wooviet_shipping_init' ) );
+		add_filter( 'woocommerce_shipping_methods', array( $this, 'wooviet_shipping_method' ) );
+
 	}
 
 	/**
@@ -259,6 +262,15 @@ class WooViet {
 		$links = array_reverse( array_merge( $links, $settings ) );
 
 		return $links;
+	}
+
+	public function wooviet_shipping_init() {
+		include( WOO_VIET_DIR . 'inc/class-wooviet-shipping-city.php' );
+	}
+
+	public function wooviet_shipping_method( $shipping_methods ) {
+	    $shipping_methods['wooviet_shipping'] = 'WooViet_Shipping_Method';
+	    return $shipping_methods;
 	}
 
 }
