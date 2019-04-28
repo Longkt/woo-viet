@@ -14,7 +14,7 @@ class WooViet_Shipping_Method extends WC_Shipping_Method {
             'instance-settings',
         );
 
-        $this->option_key               = $this->id . '_city_fields';
+        $this->option_key               = $this->id . '_' .$this->instance_id .'_city_fields';
         $this->init();
     }
     
@@ -144,7 +144,7 @@ class WooViet_Shipping_Method extends WC_Shipping_Method {
      * Generate city select area
      */
     public function generate_city_select_html() {
-        $list_cities = $this->get_list_city();
+        $list_cities = $this->get_list_cities();
         ob_start();
         ?>
 <script>
@@ -229,7 +229,7 @@ class WooViet_Shipping_Method extends WC_Shipping_Method {
     });                    
 </script>
         <tr>
-            <th scope="row" class="titledesc">Table Rates</th>
+            <th scope="row" class="titledesc">Shipping City</th>
             <td id="wooviet-shipping-city-settings">
                 <table class="shippingrows widefat">
                     <thead>
